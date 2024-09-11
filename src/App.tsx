@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Basic } from "./form/basic";
 
 function App() {
-  const [step, setStep] = useState(1);
   return (
-    <div className="">
-      <div className="">
-        <ul>
-          <li className="text-red-500">ssss</li>
-        </ul>
-      </div>
-      <div className="">폼 라인</div>
+    <div className="flex justify-center mt-10">
+      <Tabs defaultValue="basic" className="w-96">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="basic">기본</TabsTrigger>
+          <TabsTrigger value="basic2">기본2</TabsTrigger>
+        </TabsList>
+        <TabsContent value="basic">
+          <Basic />
+        </TabsContent>
+        <TabsContent value="basic2">222222</TabsContent>
+      </Tabs>
     </div>
   );
 }

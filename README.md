@@ -1,50 +1,81 @@
-# React + TypeScript + Vite
+# hookform - zod
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 시작하기
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+# 프로젝트 클론 후
+npm install
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+---------------------또는----------------------
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+```bash
+# 프로젝트 생성 후
+npm i zod @hookform/resolvers react-hook-form
+```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+## zod를 통해서 validation하기
+
+### 스키마(받아야 하는 데이터의 구조) 정의
+
+```ts
+const schema = z.object({
+  /** 이름은 필수값 */
+  name: z.string().min(1, { message: "name은 필수값입니다." }),
+  /** 닉네임은 옵션 */
+  nickname: z.string(),
+  email: z.string().email({ message: "email 형식이 아닙니다." }),
+  /** 셀렉트 박스 값 */
+  bankName: z.enum(["", "신한", "국민", "우리"], {
+    message: "은행을 올바르게 선택해주세요.",
+  }),
+});
+```
+
+> 필수값을 지정할 떈 min 활용  
+> 셀렉트 박스의 경우 enum 활용
+
+### 스키마로 부터 폼 타입 생성
+
+```ts
+type Schema = z.infer<typeof schema>;
+//아래와 같은 타입이 생성됨
+// type Schema = {
+//     name: string;
+//     nickname: string;
+//     email: string;
+//     bankName: "" | "신한" | "국민" | "우리";
+// }
+```
+
+### react-hook-form과 연결
+
+```tsx
+import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+export function Basic() {
+  const formMethods = useForm<Schema>({
+    //Schema 타입을 넣어줌
+    defaultValues: {
+      name: "",
+      nickname: "",
+      email: "",
+      bankName: "",
+    },
+    resolver: zodResolver(schema), //resolver로 schema 전달
+  });
+  /**validation이 다 통과되었을 때 */
+  const onValid: SubmitHandler<Schema> = (data) => {
+    console.log("success", data);
+  };
+
+  /**validation에서 실패 */
+  const onError: SubmitErrorHandler<Schema> = (data) => {
+    console.log("error", data);
+  };
+
+  return <form onSubmit={formMethods.handleSubmit(onValid, onError)}></form>;
+}
 ```
