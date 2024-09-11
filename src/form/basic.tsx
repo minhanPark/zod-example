@@ -2,7 +2,6 @@ import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// string, select, 필수값, email
 // coerce, refine(password), useFieldArray,
 import { Button } from "@/components/ui/button";
 import {

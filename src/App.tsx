@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Basic } from "./form/basic";
+import { Basic2 } from "./form/basic2";
 
 function App() {
   return (
@@ -12,7 +13,9 @@ function App() {
         <TabsContent value="basic">
           <Basic />
         </TabsContent>
-        <TabsContent value="basic2">222222</TabsContent>
+        <TabsContent value="basic2">
+          <Basic2 />
+        </TabsContent>
       </Tabs>
     </div>
   );
